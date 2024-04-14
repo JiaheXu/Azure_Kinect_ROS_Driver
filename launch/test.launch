@@ -1,0 +1,48 @@
+<!--
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the MIT License.
+-->
+
+<launch>
+  <arg name="tf_prefix"         default="" />                       <!-- Prefix added to tf frame IDs. It typically contains a trailing '_' unless empty. -->
+  <arg name="overwrite_robot_description" default="true" />         <!-- Flag to publish a standalone azure_description instead of the default robot_descrition parameter-->
+
+  <group if="$(arg overwrite_robot_description)">
+    <param name="robot_description"
+      command="xacro $(find azure_kinect_ros_driver)/urdf/azure_kinect.urdf.xacro tf_prefix:=$(arg tf_prefix)" />
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  </group>
+
+  <group unless="$(arg overwrite_robot_description)">
+    <param name="azure_description"
+      command="xacro $(find azure_kinect_ros_driver)/urdf/azure_kinect.urdf.xacro tf_prefix:=$(arg tf_prefix)" />
+    <node name="joint_state_publisher_azure" pkg="joint_state_publisher" type="joint_state_publisher">
+      <remap from="robot_description" to="azure_description" />
+    </node>  
+    <node name="robot_state_publisher_azure" pkg="robot_state_publisher" type="robot_state_publisher">
+      <remap from="robot_description" to="azure_description" />
+    </node>
+  </group>
+
+  <!-- <node pkg="tf" type="static_transform_publisher" name="camera_to_robot_tf" args="0 0 0 0 0 -1.9 map rgb_camera_link 100" /> -->
+
+  <!-- <node pkg="tf" type="static_transform_publisher" name="camera_to_robot_tf" args="0 0 0 0 0 -1.9 map zedxm 100" /> -->
+
+
+  <node pkg="tf" type="static_transform_publisher" name="map_to_A" args="0 0 1 -1.57 0 -1.57 map A 10" />
+
+  <!-- <node pkg="tf" type="static_transform_publisher" name="A_to_A2" args="-0.12054474 0.00011976 0.00078486 0.00001931 0.00116124 0.00011481 0.99999932 A A2 10" /> -->
+  
+  <!-- < a working setting> -->
+  <node pkg="tf" type="static_transform_publisher" name="A_to_B" args="-0.41069214 -0.12319699 0.17845229 0.02563542 0.47102263 0.23630736 0.84949358 A B 10" /> 
+
+  <node pkg="tf" type="static_transform_publisher" name="A_to_zedx" args="0 0 0 0 -1.57 1.57 A zedx 10" />
+
+  <node pkg="tf" type="static_transform_publisher" name="B_to_zedxm" args="0 0 0 0 -1.57 1.57 B zedxm 10" />
+
+  <!-- <node pkg="tf" type="static_transform_publisher" name="A_to_B" args="0.37575321 -0.09323289 0.25700969 0.02563542 0.47102263 0.23630736 0.84949358 A B 10" /> -->
+
+  <!-- <node pkg="tf" type="static_transform_publisher" name="A_to_B" args="0.37575321 -0.09323289 0.25700969 0.02563542 0.47102263 0.23630736 0.84949358 A B 10" /> -->
+  
+</launch>
